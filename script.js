@@ -87,7 +87,7 @@ function openCertModal(type = 'usn') {
         icon.className = "fa-solid fa-graduation-cap text-4xl text-cyber-cyan animate-pulse";
         title.textContent = "Poster Edukasi: Ketekunan & Disiplin";
         subtitle.textContent = "KARYA DESAIN GRAFIS EDUKASI DIGITAL DIKSAN";
-        img.src = "1000318248.jpg";
+        img.src = "image/poster 2.png"
         body.innerHTML = `
             <p><strong>Kreator:</strong> Diksan (SMKN 1 Kolaka)</p>
             <p><strong>Kategori:</strong> Desain Poster Edukasi Motivasi Belajar</p>
@@ -98,7 +98,7 @@ function openCertModal(type = 'usn') {
         icon.className = "fa-solid fa-award text-4xl text-cyber-gold animate-pulse";
         title.textContent = "Poster Juara 3 USN (Kelestarian Lingkungan)";
         subtitle.textContent = "UNIVERSITAS SEMBILANBELAS NOVEMBER (USN) KOLAKA";
-        img.src = "1000311682.png";
+        img.src = "image/poster 1.png"
         body.innerHTML = `
             <p><strong>Pemenang:</strong> Diksan (11 TJKT SMKN 1 Kolaka)</p>
             <p><strong>Judul Karya:</strong> "Kearifan Lokal Kelestarian Lingkungan - Gotong Royong dan Nilai Lokal Untuk Kehidupan Bersama"</p>
