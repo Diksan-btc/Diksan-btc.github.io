@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIKSAN // CYBER OS PORTFOLIO v5.0 FINAL</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js Sound Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Three.js 3D Graphic Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;700;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            black: '#02040a',
+                            dark: '#070f1e',
+                            card: '#0c192e',
+                            cyan: '#00f3ff',
+                            blue: '#0066ff',
+                            purple: '#a855f7',
+                            pink: '#ec4899',
+                            gold: '#fbbf24',
+                            emerald: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                        cyber: ['Orbitron', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 25px rgba(0, 243, 255, 0.45)',
+                        'neon-strong': '0 0 45px rgba(0, 243, 255, 0.75)',
+                        'gold-glow': '0 0 30px rgba(251, 191, 36, 0.55)',
+                        'purple-glow': '0 0 30px rgba(168, 85, 247, 0.55)',
+                        'pink-glow': '0 0 30px rgba(236, 72, 153, 0.55)'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Menghubungkan file CSS Eksternal -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyber-cyan selection:text-black">
+
+    <!-- Scanline overlay for CRT display texture -->
+    <div class="scanlines"></div>
+    
+    <!-- Background Interactive Visual Layers -->
+    <canvas id="cyber-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
+    <div id="three-container" class="fixed inset-0 pointer-events-none z-0 opacity-40"></div>
+    <canvas id="matrix-rain-canvas" class="fixed inset-0 pointer-events-none z-50 hidden opacity-90"></canvas>
+
+    <header class="sticky top-0 z-40 bg-black/85 backdrop-blur-xl border-b border-cyber-cyan/30 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="goToPage(1)">
+                <div class="w-11 h-11 rounded-2xl holo-gradient flex items-center justify-center font-cyber font-black text-black text-2xl shadow-neon-cyan group-hover:rotate-180 transition-transform duration-700">
+                    D
+                </div>
+                <div>
+                    <h1 class="font-cyber font-black text-sm sm:text-base text-white tracking-widest flex items-center gap-2">
+                        DIKSAN <span class="text-[9px] px-2 py-0.5 rounded bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/40 font-mono">11 TJKT</span>
+                    </h1>
+                    <p class="text-[9px] text-gray-400 font-mono flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyber-emerald animate-ping"></span> SMKN 1 KOLAKA • CREATOR OS v5.0
+                    </p>
+                </div>
+            </div>
+
+            <!-- Page Navigation Tabs -->
+            <nav class="hidden lg:flex items-center gap-2 font-mono text-xs">
+                <button onclick="goToPage(1)" id="nav-btn-1" class="px-3 py-2 rounded-xl border border-cyber-cyan/50 bg-cyber-cyan/20 text-cyber-cyan font-bold transition-all shadow-neon-cyan flex items-center gap-1.5">
+                    <i class="fa-solid fa-house"></i> 01. Home
+                </button>
+                <button onclick="goToPage(2)" id="nav-btn-2" class="px-3 py-2 rounded-xl border border-transparent text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-address-card"></i> 02. Biodata & Kontak
+                </button>
+                <button onclick="goToPage(3)" id="nav-btn-3" class="px-3 py-2 rounded-xl border border-transparent text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-microchip"></i> 03. Keahlian
+                </button>
+                <button onclick="goToPage(4)" id="nav-btn-4" class="px-3 py-2 rounded-xl border border-transparent text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-trophy"></i> 04. Prestasi
+                </button>
+                <button onclick="goToPage(5)" id="nav-btn-5" class="px-3 py-2 rounded-xl border border-transparent text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 05. Lab Poster
+                </button>
+                <button onclick="goToPage(6)" id="nav-btn-6" class="px-3 py-2 rounded-xl border border-transparent text-gray-400 hover:text-white transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-diagram-project"></i> 06. Proyek & Roadmap
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <button onclick="toggleAudioSFX()" id="audio-toggle-btn" class="w-10 h-10 rounded-xl glass-card text-cyber-cyan flex items-center justify-center text-sm hover:scale-110 transition-transform">
+                    <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+                <button onclick="openTerminalHUD()" class="px-3.5 py-2 rounded-xl bg-cyber-cyan/20 border border-cyber-cyan/60 text-cyber-cyan text-xs font-mono hover:bg-cyber-cyan hover:text-black transition-all flex items-center gap-2 shadow-neon-cyan font-bold">
+                    <i class="fa-solid fa-terminal"></i> <span class="hidden sm:inline">CLI HUD</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+        
+        <!-- PAGE 1: BERANDA / HOME -->
+        <section id="page-1" class="w-full space-y-8 page-transition block">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Teaser & Typewriter Content (Kiri) -->
+                <div class="lg:col-span-7 space-y-6 text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/40 text-cyber-cyan text-xs font-mono animate-pulse shadow-neon-cyan">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyber-cyan animate-ping"></span> 
+                        <span>SYSTEM ONLINE // DIKSAN OS v5.0 FINAL CHAMPION</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h2 class="text-4xl sm:text-6xl font-cyber font-black text-white tracking-tight leading-tight">
+                            PORTFOLIO <span class="text-transparent bg-clip-text holo-gradient">DIKSAN</span>
+                        </h2>
+                        <!-- Teks Typewriter Interaktif -->
+                        <div class="text-base sm:text-xl font-bold text-cyber-cyan font-mono flex items-center gap-2 h-8">
+                            <i class="fa-solid fa-terminal text-cyber-gold"></i>
+                            <span id="typewriter-text" class="typing-cursor"></span>
+                        </div>
+                    </div>
+
+                    <p class="text-sm sm:text-base text-gray-300 font-mono leading-relaxed max-w-2xl bg-black/40 p-4 rounded-2xl border border-cyber-cyan/20 backdrop-blur-md">
+                        Selamat datang di platform portofolio digital interaktif. Diksan mengkhususkan diri pada bidang <strong class="text-white">Teknik Jaringan Komputer & Telekomunikasi (TJKT)</strong>, <strong class="text-cyber-cyan">Desain Poster Lomba</strong>, <strong class="text-cyber-gold">Retouching Foto</strong>, serta <strong class="text-cyber-purple">Pengembangan Web Modern</strong>.
+                    </p>
+
+                    <!-- Wave Glow Achievements Banner -->
+                    <div class="p-5 rounded-3xl glass-card border-cyber-gold/50 shadow-gold-glow space-y-3 relative overflow-hidden">
+                        <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-cyber-gold/10 rounded-full blur-2xl pointer-events-none"></div>
+                        <span class="text-xs font-mono text-cyber-gold tracking-widest uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-award text-base animate-bounce"></i> REKAM JEJAK PRESTASI UNGGULAN
+                        </span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                            <div class="p-3 rounded-2xl bg-black/50 border border-cyber-gold/40 text-cyber-gold font-bold flex items-center gap-2 hover:border-cyber-gold transition-colors">
+                                <i class="fa-solid fa-trophy text-base text-cyber-gold"></i> Juara 3 Poster USN
+                            </div>
+                            <div class="p-3 rounded-2xl bg-black/50 border border-cyber-cyan/40 text-cyber-cyan font-bold flex items-center gap-2 hover:border-cyber-cyan transition-colors">
+                                <i class="fa-solid fa-calculator text-base text-cyber-cyan"></i> OSN Math SMPN 3
+                            </div>
+                            <div class="p-3 rounded-2xl bg-black/50 border border-cyber-emerald/40 text-cyber-emerald font-bold flex items-center gap-2 hover:border-cyber-emerald transition-colors">
+                                <i class="fa-solid fa-star text-base text-cyber-emerald"></i> Top 5 Kelas SMPN 3
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cyber Interactive Audio Soundboard -->
+                    <div class="p-4 rounded-2xl bg-black/60 border border-cyber-cyan/30 space-y-2 font-mono">
+                        <span class="text-[10px] text-cyber-cyan uppercase tracking-widest flex items-center gap-1.5 font-bold">
+                            <i class="fa-solid fa-sliders text-cyber-pink"></i> CYBER AUDIO SYNTH SOUNDBOARD
+                        </span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="playCyberSound('laser')" class="px-3 py-1.5 rounded-lg bg-cyber-cyan/20 border border-cyber-cyan/40 text-cyber-cyan text-xs hover:bg-cyber-cyan hover:text-black transition-all">
+                                ⚡ Laser Synth
+                            </button>
+                            <button onclick="playCyberSound('blaster')" class="px-3 py-1.5 rounded-lg bg-cyber-purple/20 border border-cyber-purple/40 text-cyber-purple text-xs hover:bg-cyber-purple hover:text-white transition-all">
+                                🔮 Warp Pulse
+                            </button>
+                            <button onclick="playCyberSound('cyber-chord')" class="px-3 py-1.5 rounded-lg bg-cyber-gold/20 border border-cyber-gold/40 text-cyber-gold text-xs hover:bg-cyber-gold hover:text-black transition-all">
+                                🎵 Cyber Chord
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex flex-wrap items-center gap-4 font-mono">
+                        <button onclick="goToPage(2)" class="px-8 py-4 rounded-2xl holo-gradient text-black font-cyber font-black text-sm tracking-wider hover:scale-105 transition-transform shadow-neon-strong flex items-center gap-3">
+                            ENTER SYSTEM / BIODATA <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="openCertModal('usn')" class="px-6 py-4 rounded-2xl glass-card text-cyber-gold border border-cyber-gold/50 hover:bg-cyber-gold/20 transition-all text-xs font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-image"></i> Lihat Poster Juara 3
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hologram Menyala & 3D Interactive Core (Kanan) -->
+                <div class="lg:col-span-5 flex justify-center items-center py-6">
+                    <div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
+                        <!-- Ripple Waves -->
+                        <div class="wave-ripple w-full h-full"></div>
+                        <div class="wave-ripple wave-ripple-2 w-full h-full"></div>
+                        
+                        <!-- Outer Rotating Hologram Rings -->
+                        <div class="absolute inset-0 rounded-full border-2 border-dashed border-cyber-cyan/60 animate-spin" style="animation-duration: 18s;"></div>
+                        <div class="absolute inset-4 rounded-full border border-cyber-purple/50 animate-spin" style="animation-duration: 12s; animation-direction: reverse;"></div>
+
+                        <!-- Core Hologram Glowing Emblem -->
+                        <div class="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full glass-card border-2 border-cyber-cyan flex flex-col items-center justify-center text-center p-4 holo-core-glow shadow-neon-strong">
+                            <div class="w-16 h-16 rounded-2xl holo-gradient flex items-center justify-center font-cyber font-black text-black text-3xl shadow-neon-cyan mb-2">
+                                D
+                            </div>
+                            <h3 class="font-cyber font-bold text-sm text-white tracking-widest">DIKSAN CORE</h3>
+                            <p class="text-[10px] text-cyber-cyan font-mono mt-1">11 TJKT • CREATOR</p>
+                            <span class="text-[8px] mt-2 px-2 py-0.5 rounded-full bg-cyber-emerald/20 text-cyber-emerald border border-cyber-emerald/40 font-mono flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyber-emerald animate-ping"></span> 3D HOLO ACTIVE
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PAGE 2: BIODATA & KONTAK -->
+        <section id="page-2" class="w-full hidden space-y-8 transition-all duration-500">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono text-cyber-cyan tracking-widest uppercase">// HALAMAN 02</span>
+                <h2 class="text-3xl sm:text-4xl font-cyber font-black text-white">BIODATA & KONTAK RESMI</h2>
+                <p class="text-xs text-gray-400 font-mono">Informasi Diri, Pendidikan, serta Akses Komunikasi Langsung</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
+                <div class="glass-card p-6 rounded-3xl border-cyber-cyan/40 space-y-4">
+                    <h3 class="text-base font-bold text-cyber-cyan border-b border-cyber-cyan/30 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-user"></i> PROFIL AKADEMIK
+                    </h3>
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between border-b border-white/10 pb-2">
+                            <span class="text-gray-400">Nama Lengkap:</span>
+                            <span class="font-bold text-white">Diksan</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/10 pb-2">
+                            <span class="text-gray-400">Status Sekolah:</span>
+                            <span class="font-bold text-cyber-emerald">Siswa Aktif SMKN 1 Kolaka</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/10 pb-2">
+                            <span class="text-gray-400">Kelas / Jurusan:</span>
+                            <span class="font-bold text-cyber-cyan">11 TJKT Teknisi Jaringan</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/10 pb-2">
+                            <span class="text-gray-400">Riwayat SMP:</span>
+                            <span class="font-bold text-white">SMPN 3 Kolaka</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Peminatan Minat:</span>
+                            <span class="font-bold text-cyber-gold">Desain Poster & Networking</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl border-cyber-emerald/40 space-y-4">
+                    <h3 class="text-base font-bold text-cyber-emerald border-b border-cyber-emerald/30 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> AKSES KONTAK LANGSUNG
+                    </h3>
+                    <div class="space-y-4 text-xs">
+                        <a href="https://wa.me/6285787002588" target="_blank" class="p-4 rounded-2xl bg-black/50 border border-cyber-emerald/50 hover:bg-cyber-emerald/20 transition-all flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-brands fa-whatsapp text-2xl text-cyber-emerald"></i>
+                                <div>
+                                    <p class="font-bold text-white">WhatsApp Resmi</p>
+                                    <p class="text-gray-400 text-[11px]">+62 857-8700-2588</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-cyber-emerald group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+
+                        <a href="mailto:disankolo4@gmail.com" class="p-4 rounded-2xl bg-black/50 border border-cyber-pink/50 hover:bg-cyber-pink/20 transition-all flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-envelope text-2xl text-cyber-pink"></i>
+                                <div>
+                                    <p class="font-bold text-white">Email Resmi</p>
+                                    <p class="text-gray-400 text-[11px]">disankolo4@gmail.com</p>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-cyber-pink group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-between items-center font-mono">
+                <button onclick="goToPage(1)" class="px-5 py-2.5 rounded-xl glass-card text-gray-300 hover:text-white flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-arrow-left"></i> Beranda
+                </button>
+                <button onclick="goToPage(3)" class="px-6 py-2.5 rounded-xl holo-gradient text-black font-bold flex items-center gap-2 text-xs shadow-neon-cyan">
+                    Ke Keahlian <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE 3: KEAHLIAN & SKILLS -->
+        <section id="page-3" class="w-full hidden space-y-8 transition-all duration-500">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono text-cyber-purple tracking-widest uppercase">// HALAMAN 03</span>
+                <h2 class="text-3xl sm:text-4xl font-cyber font-black text-white">KEAHLIAN & SPESIALISASI</h2>
+                <p class="text-xs text-gray-400 font-mono">Uji Coba Modal Detail Spesifikasi Software & Tingkat Penguasaan Skill</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono">
+                <div onclick="openSkillModal('poster')" class="glass-card p-6 rounded-3xl border-cyber-gold/40 space-y-4 cursor-pointer hover:border-cyber-gold transition-all">
+                    <div class="flex items-center justify-between">
+                        <i class="fa-solid fa-palette text-3xl text-cyber-gold"></i>
+                        <span class="text-[10px] px-2.5 py-1 rounded bg-cyber-gold/20 text-cyber-gold font-bold border border-cyber-gold/40">95% EXPERT</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Desain Poster Lomba</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">Merancang komposisi visual poster digital berstandar kompetisi dengan hirarki tipografi dan harmoni warna yang presisi.</p>
+                    <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-cyber-gold h-full rounded-full w-[95%]"></div>
+                    </div>
+                </div>
+
+                <div onclick="openSkillModal('photo')" class="glass-card p-6 rounded-3xl border-cyber-cyan/40 space-y-4 cursor-pointer hover:border-cyber-cyan transition-all">
+                    <div class="flex items-center justify-between">
+                        <i class="fa-solid fa-camera-retro text-3xl text-cyber-cyan"></i>
+                        <span class="text-[10px] px-2.5 py-1 rounded bg-cyber-cyan/20 text-cyber-cyan font-bold border border-cyber-cyan/40">90% ADVANCED</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Retouching Foto</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">Manipulasi objek digital, pemotongan latar belakang presisi, pencahayaan, serta grading warna profesional.</p>
+                    <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-cyber-cyan h-full rounded-full w-[90%]"></div>
+                    </div>
+                </div>
+
+                <div onclick="openSkillModal('web')" class="glass-card p-6 rounded-3xl border-cyber-purple/40 space-y-4 cursor-pointer hover:border-cyber-purple transition-all">
+                    <div class="flex items-center justify-between">
+                        <i class="fa-solid fa-code text-3xl text-cyber-purple"></i>
+                        <span class="text-[10px] px-2.5 py-1 rounded bg-cyber-purple/20 text-cyber-purple font-bold border border-cyber-purple/40">85% INTERMEDIATE</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Frontend Web Dev</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">Pengembangan antarmuka website responsif, interaktif, dan ringan menggunakan HTML5, Tailwind CSS, & ES6 JavaScript.</p>
+                    <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-cyber-purple h-full rounded-full w-[85%]"></div>
+                    </div>
+                </div>
+
+                <div onclick="openSkillModal('network')" class="glass-card p-6 rounded-3xl border-cyber-emerald/40 space-y-4 cursor-pointer hover:border-cyber-emerald transition-all">
+                    <div class="flex items-center justify-between">
+                        <i class="fa-solid fa-network-wired text-3xl text-cyber-emerald"></i>
+                        <span class="text-[10px] px-2.5 py-1 rounded bg-cyber-emerald/20 text-cyber-emerald font-bold border border-cyber-emerald/40">88% TJKT MAJOR</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Teknik Jaringan MikroTik</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">Konfigurasi RouterBoard MikroTik via WinBox, IP Subnetting IPv4, crimping kabel UTP LAN, serta Hotspot Setup.</p>
+                    <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-cyber-emerald h-full rounded-full w-[88%]"></div>
+                    </div>
+                </div>
+
+                <div onclick="openSkillModal('tech')" class="glass-card p-6 rounded-3xl border-cyber-pink/40 space-y-4 cursor-pointer hover:border-cyber-pink transition-all">
+                    <div class="flex items-center justify-between">
+                        <i class="fa-solid fa-microchip text-3xl text-cyber-pink"></i>
+                        <span class="text-[10px] px-2.5 py-1 rounded bg-cyber-pink/20 text-cyber-pink font-bold border border-cyber-pink/40">92% HARDWARE</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Maintenance PC Hardware</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">Perakitan komponen PC desktop, instalasi sistem operasi Windows & Linux, penggantian pasta thermal, dan perbaikan perangkat.</p>
+                    <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-cyber-pink h-full rounded-full w-[92%]"></div>
+                    </div>
+                </div>
+
+                <div onclick="openSkillModal('media')" class="glass-card p-6 rounded-3xl border-cyber-blue/40 space-y-4 cursor-pointer hover:border-cyber-blue transition-all">
+                    <div class="flex items-center justify-between">
+                        <i class="fa-brands fa-tiktok text-3xl text-cyber-blue"></i>
+                        <span class="text-[10px] px-2.5 py-1 rounded bg-cyber-blue/20 text-cyber-blue font-bold border border-cyber-blue/40">87% CREATOR</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Konten Kreatif TikTok</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">Pembuatan video pendek CapCut/Reels, skrip konten kreatif, serta pengeditan ritme audio yang menarik perhatian audiens.</p>
+                    <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-cyber-blue h-full rounded-full w-[87%]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-between items-center font-mono">
+                <button onclick="goToPage(2)" class="px-5 py-2.5 rounded-xl glass-card text-gray-300 hover:text-white flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-arrow-left"></i> Biodata & Kontak
+                </button>
+                <button onclick="goToPage(4)" class="px-6 py-2.5 rounded-xl holo-gradient text-black font-bold flex items-center gap-2 text-xs shadow-neon-cyan">
+                    Ke Prestasi <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE 4: PRESTASI & GALERI POSTER -->
+        <section id="page-4" class="w-full hidden space-y-8 transition-all duration-500">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono text-cyber-gold tracking-widest uppercase">// HALAMAN 04</span>
+                <h2 class="text-3xl sm:text-4xl font-cyber font-black text-white">GALERI KARYA & PRESTASI</h2>
+                <p class="text-xs text-gray-400 font-mono">Klik Poster Untuk Membuka Pratinjau Zoom HD Fullscreen</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
+                <!-- Poster Juara 3 USN -->
+                <div class="glass-card p-6 rounded-3xl border-cyber-gold/50 space-y-4">
+                    <div class="relative rounded-2xl overflow-hidden border border-cyber-gold/40 group cursor-pointer" onclick="openCertModal('usn')">
+                        <img src="image/poster 1.png" alt="Poster Juara 3 USN" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <span class="px-3 py-1.5 rounded-xl bg-black/80 text-cyber-gold border border-cyber-gold/50 text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom HD Poster Juara 3
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] px-2.5 py-0.5 rounded bg-cyber-gold/20 text-cyber-gold font-bold border border-cyber-gold/40">USN KOLAKA CHAMPION</span>
+                        <h3 class="text-lg font-bold text-white pt-1">Kearifan Lokal Kelestarian Lingkungan</h3>
+                        <p class="text-xs text-gray-300">Karya poster digital yang menjuarai Juara 3 kompetisi Universitas Sembilanbelas November Kolaka.</p>
+                    </div>
+                </div>
+
+                <!-- Poster Edukasi Ketekunan & Disiplin -->
+                <div class="glass-card p-6 rounded-3xl border-cyber-cyan/50 space-y-4">
+                    <div class="relative rounded-2xl overflow-hidden border border-cyber-cyan/40 group cursor-pointer" onclick="openCertModal('edukasi')">
+                        <img src="image/poster 2.png" alt="Poster Edukasi Diksan" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <span class="px-3 py-1.5 rounded-xl bg-black/80 text-cyber-cyan border border-cyber-cyan/50 text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom HD Poster Edukasi
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] px-2.5 py-0.5 rounded bg-cyber-cyan/20 text-cyber-cyan font-bold border border-cyber-cyan/40">POSTER EDUKASI DIGITAL</span>
+                        <h3 class="text-lg font-bold text-white pt-1">Ketekunan & Disiplin Belajar</h3>
+                        <p class="text-xs text-gray-300">Poster visual motivasi belajar dan kedisiplinan yang dirancang khusus oleh Diksan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-between items-center font-mono">
+                <button onclick="goToPage(3)" class="px-5 py-2.5 rounded-xl glass-card text-gray-300 hover:text-white flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-arrow-left"></i> Keahlian
+                </button>
+                <button onclick="goToPage(5)" class="px-6 py-2.5 rounded-xl holo-gradient text-black font-bold flex items-center gap-2 text-xs shadow-neon-cyan">
+                    Ke Lab Poster <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE 5: LAB POSTER INTERAKTIF -->
+        <section id="page-5" class="w-full hidden space-y-8 transition-all duration-500">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono text-cyber-cyan tracking-widest uppercase">// HALAMAN 05</span>
+                <h2 class="text-3xl sm:text-4xl font-cyber font-black text-white">LAB POSTER CREATIVE STUDIO</h2>
+                <p class="text-xs text-gray-400 font-mono">Simulator Interaktif Pembuat Poster Digital & Export Gambar Karya Diksan</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center glass-card p-6 rounded-3xl border-cyber-cyan/40 font-mono">
+                <div class="lg:col-span-5 space-y-4">
+                    <h3 class="text-sm font-bold text-cyber-cyan border-b border-cyber-cyan/30 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders"></i> KUSTOMISASI CANVAS LIVE
+                    </h3>
+                    
+                    <div>
+                        <label class="text-xs text-gray-300">Judul Utama Poster:</label>
+                        <input type="text" id="poster-text-input" value="KELESTARIAN LINGKUNGAN KITA" oninput="updateLivePoster()" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-black border border-cyber-cyan/40 text-white text-xs focus:outline-none focus:border-cyber-cyan">
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-300">Sub-Judul / Pesan Poster:</label>
+                        <input type="text" id="poster-sub-input" value="Jaga Bumi Untuk Generasi Masa Depan" oninput="updateLivePoster()" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-black border border-cyber-cyan/40 text-white text-xs focus:outline-none focus:border-cyber-cyan">
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-300">Ikon Sentral Poster:</label>
+                        <select id="poster-icon-select" onchange="updateLivePoster()" class="w-full mt-1.5 px-3 py-2 rounded-xl bg-black border border-cyber-cyan/40 text-white text-xs focus:outline-none">
+                            <option value="fa-earth-asia">🌍 Earth / Lingkungan</option>
+                            <option value="fa-award">🏆 Trophy / Prestasi</option>
+                            <option value="fa-graduation-cap">🎓 Cap / Pendidikan</option>
+                            <option value="fa-bolt">⚡ Cyber Pulse / Tech</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-gray-300">Skema Tema Warna Neon:</label>
+                        <div class="flex gap-3 mt-2">
+                            <button onclick="setPosterTheme('cyan')" class="w-8 h-8 rounded-xl bg-cyber-cyan border border-white/20 hover:scale-110 transition-transform"></button>
+                            <button onclick="setPosterTheme('gold')" class="w-8 h-8 rounded-xl bg-cyber-gold border border-white/20 hover:scale-110 transition-transform"></button>
+                            <button onclick="setPosterTheme('purple')" class="w-8 h-8 rounded-xl bg-cyber-purple border border-white/20 hover:scale-110 transition-transform"></button>
+                            <button onclick="setPosterTheme('emerald')" class="w-8 h-8 rounded-xl bg-cyber-emerald border border-white/20 hover:scale-110 transition-transform"></button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="downloadGeneratedPoster()" class="w-full py-3 rounded-2xl bg-cyber-cyan text-black font-bold text-xs shadow-neon-cyan hover:bg-white transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Export PNG Canvas Poster
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 flex justify-center">
+                    <div id="live-poster-frame" class="w-full max-w-sm h-96 rounded-2xl border-2 border-cyber-cyan bg-black p-6 flex flex-col justify-between text-center relative overflow-hidden shadow-neon-strong transition-all">
+                        <div class="space-y-1">
+                            <span class="text-[9px] px-2 py-0.5 rounded bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/40">POSTER CREATOR DIKSAN</span>
+                            <h4 id="live-poster-title" class="text-xl font-cyber font-black text-white uppercase pt-2">KELESTARIAN LINGKUNGAN KITA</h4>
+                        </div>
+
+                        <div class="my-auto flex justify-center">
+                            <i id="live-poster-icon" class="fa-solid fa-earth-asia text-6xl text-cyber-cyan animate-pulse"></i>
+                        </div>
+
+                        <div class="space-y-2">
+                            <p id="live-poster-sub" class="text-xs text-gray-300 font-semibold">Jaga Bumi Untuk Generasi Masa Depan</p>
+                            <div class="text-[9px] text-gray-500 border-t border-white/10 pt-2">CREATED BY DIKSAN • 11 TJKT SMKN 1 KOLAKA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-between items-center font-mono">
+                <button onclick="goToPage(4)" class="px-5 py-2.5 rounded-xl glass-card text-gray-300 hover:text-white flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-arrow-left"></i> Prestasi
+                </button>
+                <button onclick="goToPage(6)" class="px-6 py-2.5 rounded-xl holo-gradient text-black font-bold flex items-center gap-2 text-xs shadow-neon-cyan">
+                    Ke Proyek & Roadmap <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- PAGE 6: PROYEK & ROADMAP -->
+        <section id="page-6" class="w-full hidden space-y-8 transition-all duration-500">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono text-cyber-purple tracking-widest uppercase">// HALAMAN 06</span>
+                <h2 class="text-3xl sm:text-4xl font-cyber font-black text-white">PROYEK & ROADMAP MASA DEPAN</h2>
+                <p class="text-xs text-gray-400 font-mono">Eksplorasi Proyek Praktikum TJKT, Desain Visual, & Target Sertifikasi Diksan</p>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-xs font-mono text-cyber-cyan tracking-widest uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-cubes"></i> GALERI PROYEK & EKSPERIMEN TJKT
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono">
+                    <div class="glass-card p-6 rounded-3xl border-cyber-cyan/40 space-y-4 flex flex-col justify-between hover:scale-105 transition-all">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg bg-cyber-cyan/20 border border-cyber-cyan/40 text-cyber-cyan text-[10px] font-bold">NETWORKING LAB</span>
+                                <span class="text-[10px] text-cyber-emerald flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyber-emerald animate-pulse"></span> SELESAI</span>
+                            </div>
+                            <h4 class="text-lg font-cyber font-bold text-white">Setup Router & Hotspot MikroTik</h4>
+                            <p class="text-xs text-gray-300 leading-relaxed">Perancangan jaringan lokal menggunakan RouterBoard MikroTik, konfigurasi DHCP Server, Bandwidth Limiting (Queue), dan Custom User Hotspot Landing Page.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
+                            <span class="text-gray-400">Tech: WinBox, RouterOS, LAN</span>
+                            <span class="text-cyber-cyan font-bold">11 TJKT SMKN 1</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-3xl border-cyber-gold/40 space-y-4 flex flex-col justify-between hover:scale-105 transition-all">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg bg-cyber-gold/20 border border-cyber-gold/40 text-cyber-gold text-[10px] font-bold">GRAPHIC DESIGN</span>
+                                <span class="text-[10px] text-cyber-gold flex items-center gap-1"><i class="fa-solid fa-trophy"></i> CHAMPION</span>
+                            </div>
+                            <h4 class="text-lg font-cyber font-bold text-white">Campaign Poster Lingkungan USN</h4>
+                            <p class="text-xs text-gray-300 leading-relaxed">Serial poster digital bertema kearifan lokal kelestarian alam yang menjuarai Juara 3 lomba desain poster tingkat Universitas Sembilanbelas November.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
+                            <span class="text-gray-400">Tech: Photoshop, Color Grading</span>
+                            <span class="text-cyber-gold font-bold">Award Winner</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-3xl border-cyber-purple/40 space-y-4 flex flex-col justify-between hover:scale-105 transition-all">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg bg-cyber-purple/20 border border-cyber-purple/40 text-cyber-purple text-[10px] font-bold">WEB PLATFORM</span>
+                                <span class="text-[10px] text-cyber-cyan flex items-center gap-1"><i class="fa-solid fa-code"></i> ACTIVE OS</span>
+                            </div>
+                            <h4 class="text-lg font-cyber font-bold text-white">Cyberpunk Portfolio Platform v5.0</h4>
+                            <p class="text-xs text-gray-300 leading-relaxed">Website portofolio interaktif berbasis HTML, Tailwind CSS, Tone.js, dan Three.js 3D Engine dengan tema futuristik untuk menampung biodata dan karya.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
+                            <span class="text-gray-400">Tech: JS ES6, Tailwind, Tone.js</span>
+                            <span class="text-cyber-purple font-bold">Frontend Dev</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 pt-4 font-mono">
+                <h3 class="text-xs font-mono text-cyber-gold tracking-widest uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-timeline"></i> TIMELINE REKAM JEJAK & TARGET MASA DEPAN
+                </h3>
+
+                <div class="glass-card p-6 sm:p-8 rounded-3xl border-cyber-purple/40 space-y-6">
+                    <div class="relative border-l-2 border-cyber-cyan/40 ml-4 pl-6 space-y-8">
+                        <div class="relative group">
+                            <span class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-cyber-cyan shadow-neon-cyan border-2 border-black"></span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded bg-cyber-cyan/20 text-cyber-cyan font-bold border border-cyber-cyan/40">2023 - SMPN 3 KOLAKA</span>
+                            <h4 class="text-base font-bold text-white pt-1">Prestasi Akademik & OSN Matematika</h4>
+                            <p class="text-xs text-gray-400 mt-1">Berhasil masuk Top 5 Besar Juara Kelas dan dipercaya menjadi utusan resmi sekolah pada ajang OSN Matematika Tingkat Kabupaten.</p>
+                        </div>
+
+                        <div class="relative group">
+                            <span class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-cyber-gold shadow-gold-glow border-2 border-black"></span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded bg-cyber-gold/20 text-cyber-gold font-bold border border-cyber-gold/40">2024 - USN KOLAKA</span>
+                            <h4 class="text-base font-bold text-white pt-1">Juara 3 Kompetisi Graphic Poster Editing</h4>
+                            <p class="text-xs text-gray-400 mt-1">Meraih predikat Juara 3 pada lomba desain poster Universitas Sembilanbelas November Kolaka dengan karya poster kelestarian lingkungan.</p>
+                        </div>
+
+                        <div class="relative group">
+                            <span class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-cyber-emerald shadow-neon-cyan border-2 border-black"></span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded bg-cyber-emerald/20 text-cyber-emerald font-bold border border-cyber-emerald/40">2025/2026 - SMKN 1 KOLAKA</span>
+                            <h4 class="text-base font-bold text-white pt-1">Fokus Spesialisasi Teknisi 11 TJKT & Digital Creator</h4>
+                            <p class="text-xs text-gray-400 mt-1">Memperdalam pemahaman jaringan komputer MikroTik, perakitan hardware PC, serta pengembangan karya konten digital dan web.</p>
+                        </div>
+
+                        <div class="relative group">
+                            <span class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-cyber-pink shadow-pink-glow border-2 border-black animate-pulse"></span>
+                            <span class="text-[10px] px-2.5 py-0.5 rounded bg-cyber-pink/20 text-cyber-pink font-bold border border-cyber-pink/40">FUTURE TARGET</span>
+                            <h4 class="text-base font-bold text-white pt-1">Sertifikasi MikroTik MTCNA & Studio Kreatif Professional</h4>
+                            <p class="text-xs text-gray-400 mt-1">Mencapai sertifikasi jaringan internasional MTCNA dan mengembangkan studio desain poster serta pengembangan antarmuka web.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex justify-between items-center font-mono">
+                <button onclick="goToPage(5)" class="px-5 py-2.5 rounded-xl glass-card text-gray-300 hover:text-white flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-arrow-left"></i> Lab Poster
+                </button>
+                <button onclick="goToPage(1)" class="px-6 py-2.5 rounded-xl glass-card text-cyber-cyan border border-cyber-cyan/40 hover:bg-cyber-cyan hover:text-black transition-all flex items-center gap-2 text-xs font-bold shadow-neon-cyan">
+                    <i class="fa-solid fa-rotate-left"></i> Kembali Ke Beranda
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: PRESTASI CERTIFICATE & POSTER PREVIEW MODAL -->
+    <div id="cert-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-3xl glass-card border-2 border-cyber-gold rounded-3xl p-6 sm:p-8 shadow-gold-glow relative font-mono space-y-5 my-auto" id="cert-modal-box">
+            <button onclick="closeCertModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl z-20 w-10 h-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center hover:scale-110 transition-transform">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center space-y-1">
+                <i id="cert-modal-icon" class="fa-solid fa-award text-4xl text-cyber-gold animate-pulse"></i>
+                <h3 id="cert-modal-title" class="text-xl sm:text-2xl font-cyber font-black text-white">Poster Juara 3 USN Kolaka</h3>
+                <p id="cert-modal-subtitle" class="text-xs text-cyber-gold">TEMA: KEARIFAN LOKAL KELESTARIAN LINGKUNGAN</p>
+            </div>
+
+            <div class="relative w-full max-h-[60vh] overflow-hidden rounded-2xl border-2 border-cyber-gold/40 bg-black flex items-center justify-center group cursor-pointer" onclick="toggleModalPosterZoom()">
+                <img id="cert-modal-img" src="1000311682.png" alt="Poster Diksan" class="w-full max-h-[60vh] object-contain transition-all duration-500 rounded-xl">
+                
+                <div id="poster-zoom-hint" class="absolute bottom-3 right-3 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyber-cyan/40 text-[10px] text-cyber-cyan font-mono flex items-center gap-1.5 pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i> Klik Foto Untuk Zoom HD
+                </div>
+            </div>
+
+            <div id="cert-modal-body" class="p-4 rounded-2xl bg-black/50 border border-cyber-gold/30 text-xs text-gray-300 space-y-2 leading-relaxed">
+                <p><strong>Pemenang:</strong> Diksan (11 TJKT SMKN 1 Kolaka)</p>
+                <p><strong>Judul Karya:</strong> "Kearifan Lokal Kelestarian Lingkungan - Gotong Royong dan Nilai Lokal Untuk Kehidupan Bersama"</p>
+                <p><strong>Penyelenggara:</strong> Universitas Sembilanbelas November (USN) Kolaka</p>
+                <p><strong>Pesan Karya:</strong> <em>"Bumi bukan sekadar warisan dari nenek moyang, melainkan pinjaman dari generasi mendatang yang wajib kita jaga keberlanjutannya."</em></p>
+            </div>
+
+            <div class="pt-1 text-center flex justify-center gap-3">
+                <button onclick="closeCertModal()" class="px-6 py-2.5 rounded-xl bg-cyber-gold text-black font-extrabold hover:bg-white transition-all text-xs shadow-gold-glow font-mono">
+                    Tutup Pratinjau
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SKILL DETAIL INSPECTOR MODAL -->
+    <div id="skill-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-lg glass-card border-2 border-cyber-cyan rounded-3xl p-6 shadow-neon-strong relative font-mono space-y-4">
+            <button onclick="closeSkillModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 border-b border-cyber-cyan/20 pb-3">
+                <div id="skill-modal-icon-bg" class="w-12 h-12 rounded-2xl bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan flex items-center justify-center text-xl">
+                    <i id="skill-modal-icon" class="fa-solid fa-palette"></i>
+                </div>
+                <div>
+                    <h3 id="skill-modal-title" class="text-xl font-cyber font-bold text-white">Editing Poster</h3>
+                    <p id="skill-modal-level" class="text-xs text-cyber-cyan">Tingkat Penguasaan: 95%</p>
+                </div>
+            </div>
+
+            <p id="skill-modal-desc" class="text-xs text-gray-300 leading-relaxed">
+                Detail keahlian dalam membuat karya desain grafis berstandar kompetisi.
+            </p>
+
+            <div class="space-y-2">
+                <h4 class="text-xs font-bold text-white">Software & Tools Stack:</h4>
+                <div id="skill-modal-stack" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="pt-3 border-t border-white/10 flex justify-end">
+                <button onclick="closeSkillModal()" class="px-5 py-2 rounded-xl bg-cyber-cyan text-black font-bold text-xs shadow-neon-cyan">
+                    Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CYBER TERMINAL CLI v5.0 MODAL -->
+    <div id="terminal-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-black border-2 border-cyber-cyan rounded-3xl p-6 shadow-neon-strong relative font-mono space-y-4">
+            <div class="flex items-center justify-between border-b border-cyber-cyan/30 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                    <span class="text-xs text-cyber-cyan font-bold ml-2 font-cyber">DIKSAN_CYBER_TERMINAL_v5.0</span>
+                </div>
+                <button onclick="closeTerminalHUD()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="terminal-output" class="h-64 overflow-y-auto text-xs text-cyber-cyan space-y-2 bg-black/80 p-3 rounded-xl border border-cyber-cyan/20">
+                <p>> DIKSAN CYBER OS v5.0 FINAL CHAMPION ONLINE.</p>
+                <p>> Ketik <span class="text-cyber-gold">'help'</span> untuk melihat daftar perintah terminal.</p>
+            </div>
+
+            <div class="flex items-center gap-2 bg-cyber-card p-2.5 rounded-xl border border-cyber-cyan/40">
+                <span class="text-xs text-cyber-cyan">$</span>
+                <input type="text" id="terminal-input" onkeydown="handleTerminalCommand(event)" placeholder="Ketik perintah (help, bio, prestasi, skills, matrix-rain, hack, synth)..." class="w-full bg-transparent text-xs text-white focus:outline-none font-mono">
+            </div>
+        </div>
+    </div>
+
+    <footer class="relative z-10 border-t border-cyber-cyan/20 bg-black/85 py-4 px-4 text-center text-xs text-gray-500 font-mono">
+        <p>© 2026 DIKSAN • 11 TJKT SMKN 1 Kolaka. Crafted with Cyberpunk Vision & High Performance.</p>
+    </footer>
+
+    <!-- Menghubungkan file JavaScript Eksternal -->
+    <script src="script.js"></script>
+</body>
+</html>
