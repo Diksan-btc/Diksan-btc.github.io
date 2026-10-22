@@ -517,7 +517,7 @@ function runMatrixRain(mCanvas) {
     function drawMatrix() {
         if (!matrixActive) return;
         mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        mCtx.fillRect(0, 0, mCanvas.width, mCanvas., mCanvas.height); // perbaikan minor sintaksis
+        mCtx.fillRect(0, 0, mCanvas.width, mCanvas. mCanvas.height); // perbaikan minor sintaksis
         mCtx.fillStyle = '#10b981';
         mCtx.font = fontSize + 'px monospace';
 
